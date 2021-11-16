@@ -1,0 +1,30 @@
+-- Copyright (c) 2021 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+
+module Templates where
+
+data MySimpleTemplateKey =
+  MySimpleTemplateKey
+    with
+      party: Party
+
+template MySimpleTemplate
+    with
+        owner: Party
+    where
+        signatory owner
+
+        key MySimpleTemplateKey owner: MySimpleTemplateKey
+        maintainer key.party
+
+        controller owner can
+            MyChoice
+                : ()
+                with parameter: Int
+                do return ()
+
+emptyTemplateTest = scenario do
+    alice <- getParty "Alice"
+    emptyContract <- submit alice do create MySimpleTemplate with owner = alice
+    return ()
